@@ -25,8 +25,19 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .cors(cors -> {
-                })
+                // ✅ FIXED CORS (uses your allowed origins)
+                .cors(cors -> cors.configurationSource(request -> {
+                    var config = new org.springframework.web.cors.CorsConfiguration();
+                    config.setAllowCredentials(true);
+
+                    config.addAllowedOrigin("http://localhost:4200");
+                    config.addAllowedOrigin("https://jobportalfrontend-rust.vercel.app");
+
+                    config.addAllowedHeader("*");
+                    config.addAllowedMethod("*");
+
+                    return config;
+                }))
 
                 .authorizeHttpRequests(auth -> auth
 
@@ -37,7 +48,7 @@ public class SecurityConfig {
                                 "/api/user/login",
                                 "/api/user/register",
                                 "/api/user/updatepassword",
-                                "api/user/verifyemail",
+                                "/api/user/verifyemail",
                                 "/uploads/**"
                         ).permitAll()
 
@@ -80,7 +91,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/application/company/**")
                         .hasAnyRole("COMPANY", "ADMIN")
 
-                        .requestMatchers(HttpMethod.GET,"/api/application/user")
+                        .requestMatchers(HttpMethod.GET, "/api/application/user")
                         .hasAnyRole("USER", "ADMIN")
 
                         .requestMatchers(HttpMethod.DELETE, "/api/application/**")
@@ -93,7 +104,7 @@ public class SecurityConfig {
                         .hasAnyRole("USER", "COMPANY", "ADMIN")
 
                         .requestMatchers(HttpMethod.POST, "/api/company/create/**")
-                        .hasAnyRole("ADMIN","COMPANY")
+                        .hasAnyRole("ADMIN", "COMPANY")
 
                         .requestMatchers(HttpMethod.DELETE, "/api/company/**")
                         .hasRole("ADMIN")
