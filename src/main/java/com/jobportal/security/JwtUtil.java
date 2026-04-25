@@ -13,8 +13,10 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "mysecretkeymysecretkeymysecretkey123";
-    private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
+//    private final String SECRET = "mysecretkeymysecretkeymysecretkey123";
+//    private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
+
+    private final SecretKey key = Keys.secretKeyFor(io.jsonwebtoken.SignatureAlgorithm.HS512);
 
     // ✅ GENERATE TOKEN (UPDATED)
     public String generateToken(String email, String role, int userId) {
