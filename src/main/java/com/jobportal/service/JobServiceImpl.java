@@ -5,6 +5,7 @@ import com.jobportal.dto.JobDto;
 import com.jobportal.entity.Job;
 import com.jobportal.exception.DatabaseException;
 import com.jobportal.exception.ResourceNotFoundException;
+import com.jobportal.repository.ApplicationRepo;
 import com.jobportal.repository.JobRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -20,7 +21,12 @@ public class JobServiceImpl implements JobDto {
     private JobRepo jobsRepo;
 
     @Autowired
+    private ApplicationRepo applicationRepo;
+
+    @Autowired
     private CloudinaryService cloudinaryService;
+
+
 
     // ✅ CREATE JOB
     @Override
@@ -87,10 +93,9 @@ public class JobServiceImpl implements JobDto {
                         new ResourceNotFoundException("Job not found with id: " + id)
                 );
 
-        try {
-            jobsRepo.delete(job);
-        } catch (DataAccessException e) {
-            throw new DatabaseException("Error while deleting job");
-        }
+        // 🔥 delete related applications first
+        applicationRepo.deleteByJob_Id(id);
+
+        jobsRepo.delete(job);
     }
 }

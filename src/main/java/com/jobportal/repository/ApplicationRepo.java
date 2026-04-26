@@ -18,16 +18,13 @@ public interface ApplicationRepo extends JpaRepository<Application, Integer> {
 
     List<Application> findByCompany_User_Email(String email);
 
-    @Transactional
-    @Modifying
+
     void deleteByUser_Id(int userId);
 
-    @Transactional
-    @Modifying
+
     void deleteByCompany_Id(int companyId);
 
-    @Transactional
-    @Modifying
+
     void deleteByJob_Id(int jobId);
 
     List<Application> findByUser_Id(int userId);
@@ -36,9 +33,10 @@ public interface ApplicationRepo extends JpaRepository<Application, Integer> {
 
     boolean existsByUser_IdAndJob_Id(int userId, int jobId);
 
-    @Transactional
-    @Modifying
+
     void deleteByCompanyId(int companyId);
+
+    void deleteByJob_Company_Id(int companyId);
 
 
 }

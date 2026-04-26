@@ -47,4 +47,84 @@ public class Company {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getIndustry() {
+        return industry;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public Integer getOpenPositions() {
+        return openPositions;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setIndustry(String industry) {
+        this.industry = industry;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
+
+    public void setOpenPositions(Integer openPositions) {
+        this.openPositions = openPositions;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

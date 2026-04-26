@@ -13,7 +13,7 @@ public class CloudinaryService {
 
     @Autowired
     private Cloudinary cloudinary;
-
+    //for images downloade
     public String upload(MultipartFile file, String folder) {
         try {
             Map uploadResult = cloudinary.uploader().upload(
@@ -27,5 +27,21 @@ public class CloudinaryService {
             throw new RuntimeException("Cloudinary upload failed: " + e.getMessage());
         }
     }
+    //  PDF / FILE UPLOAD
+    public String uploadFile(MultipartFile file, String folder) {
+        try {
+            Map uploadResult = cloudinary.uploader().upload(
+                    file.getBytes(),
+                    ObjectUtils.asMap(
+                            "folder", folder,
+                            "resource_type", "raw"   // ✅ FIX HERE
+                    )
+            );
+            return uploadResult.get("secure_url").toString();
+        } catch (Exception e) {
+            throw new RuntimeException("File upload failed");
+        }
+    }
+
 }
 

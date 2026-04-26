@@ -59,7 +59,7 @@ public class ApplicationServiceImpl implements ApplicationDto {
 
         try {
             // ✅ CLOUDINARY UPLOAD (REPLACES LOCAL STORAGE)
-            String fileUrl = cloudinaryService.upload(file, "jobportal/resumes");
+            String fileUrl = cloudinaryService.uploadFile(file, "jobportal/resumes");
 
             Application app = new Application();
             app.setUser(user);

@@ -83,44 +83,32 @@ public class ServiceImplementation implements UserDto {
     }
 
 
-    @Override
     @Transactional
     public void deleteUser(int userId) {
 
-        try {
-            User user = userRepo.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // ✅ delete user applications
-            applicationRepo.deleteByUser_Id(userId);
+        // ✅ 1. delete user applications
+        applicationRepo.deleteByUser_Id(userId);
 
-            // ✅ get company
-            Company company = companyRepo.findByUser_Id(userId).orElse(null);
+        Company company = companyRepo.findByUser_Id(userId).orElse(null);
 
-            if (company != null) {
+        if (company != null) {
 
-                int companyId = company.getId();
+            int companyId = company.getId();
 
-                // ✅ delete applications of company
-                applicationRepo.deleteByCompany_Id(companyId);
+            // 🔥 2. delete ALL applications of jobs (CRITICAL FIX)
+            applicationRepo.deleteByJob_Company_Id(companyId);
 
-                // ✅ delete jobs (this also deletes job_requirements automatically)
-                jobRepo.deleteByCompany_Id(companyId);
+            // 🔥 3. now delete jobs
+            jobRepo.deleteByCompany_Id(companyId);
 
-                // ✅ delete company
-                companyRepo.delete(company);
-            }
-
-            // ✅ delete user
-            userRepo.delete(user);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error deleting user: " + e.getMessage());
+            // 🔥 4. delete company
+            companyRepo.delete(company);
         }
 
+        // 🔥 5. delete user
+        userRepo.delete(user);
     }
-
-
-
 }
