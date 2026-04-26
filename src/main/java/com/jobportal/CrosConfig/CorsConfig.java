@@ -20,7 +20,7 @@ public class CorsConfig {
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:4200",
                 "https://jobportalfrontend-rust.vercel.app/",
-                "https://jobportalfrontend-sagars-projects-cf6c735c.vercel.app/"
+                "https://jobportalfrontend-9lvt6sunq-sagars-projects-cf6c735c.vercel.app/login"
 
         ));
 
