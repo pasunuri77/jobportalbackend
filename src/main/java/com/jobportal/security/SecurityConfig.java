@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableMethodSecurity
@@ -16,6 +17,9 @@ public class SecurityConfig {
 
     @Autowired
     private JwtFilter jwtFilter;
+
+    @Autowired
+    private CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -25,37 +29,29 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .cors(cors -> {
-                })
+                // ✅ IMPORTANT FIX
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // ========================
                         // PUBLIC APIs
-                        // ========================
                         .requestMatchers(
                                 "/api/user/login",
                                 "/api/user/register",
                                 "/api/user/updatepassword",
-                                "api/user/verifyemail",
+                                "/api/user/verifyemail", // ✅ fixed missing '/'
                                 "/uploads/**"
                         ).permitAll()
 
-                        // ========================
-                        // USER DELETE (ALLOW ALL ROLES)
-                        // ========================
+                        // USER DELETE
                         .requestMatchers(HttpMethod.DELETE, "/api/user/**")
                         .hasAnyRole("ADMIN", "USER", "COMPANY")
 
-                        // ========================
-                        // USER APIs (ADMIN ONLY)
-                        // ========================
+                        // USER ADMIN
                         .requestMatchers("/api/user/**")
                         .hasRole("ADMIN")
 
-                        // ========================
                         // JOB APIs
-                        // ========================
                         .requestMatchers(HttpMethod.GET, "/api/job/**")
                         .hasAnyRole("USER", "COMPANY", "ADMIN")
 
@@ -68,9 +64,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/job/**")
                         .hasAnyRole("ADMIN", "COMPANY")
 
-                        // ========================
                         // APPLICATION APIs
-                        // ========================
                         .requestMatchers(HttpMethod.POST, "/api/application/apply")
                         .hasRole("USER")
 
@@ -80,15 +74,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/application/company/**")
                         .hasAnyRole("COMPANY", "ADMIN")
 
-                        .requestMatchers(HttpMethod.GET,"/api/application/user")
+                        .requestMatchers(HttpMethod.GET, "/api/application/user")
                         .hasAnyRole("USER", "ADMIN")
 
                         .requestMatchers(HttpMethod.DELETE, "/api/application/**")
                         .hasRole("ADMIN")
 
-                        // ========================
                         // COMPANY APIs
-                        // ========================
                         .requestMatchers(HttpMethod.GET, "/api/company/**")
                         .hasAnyRole("USER", "COMPANY", "ADMIN")
 
@@ -98,9 +90,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/company/**")
                         .hasRole("ADMIN")
 
-                        // ========================
-                        // ANY OTHER
-                        // ========================
                         .anyRequest().authenticated()
                 )
 
@@ -108,5 +97,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
 }

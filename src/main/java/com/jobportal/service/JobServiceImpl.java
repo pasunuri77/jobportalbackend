@@ -1,5 +1,6 @@
 package com.jobportal.service;
 
+import com.jobportal.cloudinary.CloudinaryService;
 import com.jobportal.dto.JobDto;
 import com.jobportal.entity.Job;
 import com.jobportal.exception.DatabaseException;
@@ -10,10 +11,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -22,31 +19,26 @@ public class JobServiceImpl implements JobDto {
     @Autowired
     private JobRepo jobsRepo;
 
+    @Autowired
+    private CloudinaryService cloudinaryService;
+
     // ✅ CREATE JOB
     @Override
     public Job register(Job job, MultipartFile file) {
-        try {
-            if (file == null || file.isEmpty()) {
-                throw new RuntimeException("Logo file is required");
-            }
 
-            if (!file.getContentType().startsWith("image/")) {
-                throw new RuntimeException("Only image files allowed");
-            }
-
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-
-            Path path = Paths.get("uploads/job/" + fileName);
-            Files.createDirectories(path.getParent());
-            Files.write(path, file.getBytes());
-
-            job.setLogo("/uploads/job/" + fileName);
-
-            return jobsRepo.save(job);
-
-        } catch (IOException e) {
-            throw new DatabaseException("Error while saving logo");
+        if (file == null || file.isEmpty()) {
+            throw new RuntimeException("Logo file is required");
         }
+
+        if (!file.getContentType().startsWith("image/")) {
+            throw new RuntimeException("Only image files allowed");
+        }
+
+        String imageUrl = cloudinaryService.upload(file, "jobportal/jobs");
+
+        job.setLogo(imageUrl);
+
+        return jobsRepo.save(job);
     }
 
     // ✅ UPDATE JOB
@@ -63,26 +55,18 @@ public class JobServiceImpl implements JobDto {
         existing.setDescription(job.getDescription());
         existing.setRequirements(job.getRequirements());
 
-        try {
-            if (file != null && !file.isEmpty()) {
+        if (file != null && !file.isEmpty()) {
 
-                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-
-                Path path = Paths.get("uploads/job/" + fileName);
-                Files.createDirectories(path.getParent());
-                Files.write(path, file.getBytes());
-
-                existing.setLogo("/uploads/job/" + fileName);
+            if (!file.getContentType().startsWith("image/")) {
+                throw new RuntimeException("Only image files allowed");
             }
 
-        } catch (Exception e) {
-            throw new RuntimeException("File upload failed");
+            String imageUrl = cloudinaryService.upload(file, "jobportal/jobs");
+            existing.setLogo(imageUrl);
         }
 
         return jobsRepo.save(existing);
     }
-
-
 
     // ✅ GET ALL JOBS
     @Override
@@ -90,7 +74,7 @@ public class JobServiceImpl implements JobDto {
         return jobsRepo.findAll();
     }
 
-    // 🔥 IMPORTANT: GET JOBS BY USER (FINAL FIX)
+    // ✅ GET JOBS BY USER
     public List<Job> getJobsByUserId(int userId) {
         return jobsRepo.findDistinctByCompany_User_Id(userId);
     }

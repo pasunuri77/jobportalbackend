@@ -12,6 +12,7 @@
         <relativePath/>
     </parent>
 
+
     <groupId>com.jobportal</groupId>
     <artifactId>jobportal</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -26,6 +27,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--        CLOUDINARY -->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http44</artifactId>
+            <version>1.39.0</version>
         </dependency>
 
         <!-- ✅ JPA -->
