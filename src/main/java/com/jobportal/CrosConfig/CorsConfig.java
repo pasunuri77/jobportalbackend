@@ -19,7 +19,9 @@ public class CorsConfig {
         // ✅ allow localhost + ALL vercel deployments
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:4200",
-                "https://*.vercel.app"
+                "https://jobportalfrontend-rust.vercel.app/",
+                "https://jobportalfrontend-sagars-projects-cf6c735c.vercel.app/"
+
         ));
 
         config.setAllowedMethods(List.of(
